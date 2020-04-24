@@ -28,27 +28,37 @@
 
 
   <script type="text/babel" id="app-hello">
-    function formatName(user) {
-      return user.firstName + ' ' + user.lastName;
-    }
 
     function Welcome(props) {
       return <h1>Привет, {props.name}</h1>;
     }
 
-    const user = {
-      firstName: 'Марья',
-      lastName: 'Моревна'
-    };
+    function ActionLink() {
+      function handleClick(e) {
+        e.preventDefault();
+        console.log('По ссылке кликнули.');
+      }
 
-    const element = (
-      <h1>
-        Здравствуй, {formatName(user)}!
-      </h1>
-    );
+      return (
+        <a href="#" onClick={handleClick}>
+          Нажми на меня
+        </a>
+      );
+    }
+
+
+    function App() {
+      return (
+        <div>
+          <Welcome name="Алиса" />
+          <Welcome name="Базилио" />
+          <Welcome name="Буратино" />
+        </div>
+      );
+    }
 
     ReactDOM.render(
-      element,
+      <ActionLink />,
       document.querySelector('.app-hello')
     );
   </script>
@@ -56,18 +66,62 @@
 
 
 
+
+
+
   <script type="text/babel" id="app-tick">
-    function tick() {
-      const element = (
-        <div>
-          <h1>Show time {new Date().toLocaleTimeString()}.</h1>
-        </div>
-      );
-      ReactDOM.render(element, document.querySelector('.app-tick'));
+
+    class Clock extends React.Component {
+
+      constructor(props) {
+        super(props);
+        this.state = { date: new Date() };
+      }
+
+      componentDidMount() {
+        this.timerID = setInterval(
+          () => this.tick(),
+          1000
+        );
+      }
+
+      componentWillUnmount() {
+        clearInterval(this.timerID);
+      }
+
+      tick() {
+        this.setState({
+          date: new Date()
+        });
+      }
+
+      render() {
+        return (
+          <div>
+            <h1>Привет, мир!</h1>
+            <h2>Сейчас {this.state.date.toLocaleTimeString()}.</h2>
+          </div>
+        );
+      }
     }
 
-    setInterval(tick, 1000);
+
+    ReactDOM.render(
+      <Clock />,
+      document.querySelector('.app-tick')
+    );
+
+    // function tick() {
+
+    // }
+
+    // setInterval(tick, 1000);
   </script>
+
+
+
+
+
 
   <script src="like_button.js"></script>
 
