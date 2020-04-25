@@ -14,5 +14,5 @@ WORKDIR /app
 RUN yarn install && yarn cache clean
 # RUN yarn create react-app /usr/src/app
 
-# EXPOSE 8080
+EXPOSE 3333
 # CMD ["npm", "run", "dev"]
