@@ -1,17 +1,8 @@
 FROM node:alpine
 
+WORKDIR /app
+
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh
 
-WORKDIR /app
-
-# RUN yarn init
-# RUN npm init -y
-
-# RUN npm install -g create-react-app
-# RUN npm init react-app . --use-npm
 RUN yarn install && yarn cache clean
-# RUN yarn create react-app /usr/src/app
-
-EXPOSE 3333
-# CMD ["npm", "run", "dev"]
