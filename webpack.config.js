@@ -1,16 +1,16 @@
 const path = require('path');
 
 module.exports = {
-//   entry: './src/index.js',
-devServer: {
+  devServer: {
     contentBase: path.join(__dirname, '.'),
     hot: true,
     compress: true,
     port: 8080
   },
 
+  entry: './src/index.js',
   output: {
-    // filename: 'main.js',
+    filename: 'main.js',
     path: path.resolve(__dirname, '.'),
   },
 };
