@@ -10,3 +10,8 @@ reset:
 	docker-compose kill
 	docker-compose rm -v --force
 	docker-compose up
+
+rm:
+	docker-compose down
+	docker-compose kill
+	docker-compose rm -v --force

@@ -3,7 +3,7 @@ FROM node:alpine
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh
 
-RUN npm install --silent
+# RUN npm install --silent
 WORKDIR /app
 
 # RUN yarn init
