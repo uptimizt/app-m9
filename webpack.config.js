@@ -5,6 +5,7 @@ module.exports = {
     contentBase: path.join(__dirname, '.'),
     hot: true,
     compress: true,
+    host: '0.0.0.0',
     port: 3333
   },
 
