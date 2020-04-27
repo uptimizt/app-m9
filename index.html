@@ -1,76 +1,25 @@
-<!doctype html><html><head><meta charset="UTF-8"/><title>3 Add React in One Minute</title></head><body><h2>Add React in One Minute</h2><p>This page demonstrates using React with no build tooling.</p><p>React is loaded as a script tag.</p><div class="app-hello"></div><div id="like_button_container"></div><div class="app-tick"></div><div id="app-fitable"></div><script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script><script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script><script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script><script type="text/babel" id="app-hello">function Welcome(props) {
-      return <h1>Привет, {props.name}</h1>;
-    }
+<!DOCTYPE html>
+<html>
 
-    function ActionLink() {
-      function handleClick(e) {
-        e.preventDefault();
-        console.log('По ссылке кликнули.');
-      }
+<head>
+  <meta charset="UTF-8" />
+  <title>3 Add React in One Minute</title>
+</head>
 
-      return (
-        <a href="#" onClick={handleClick}>
-          Нажми на меня
-        </a>
-      );
-    }
+<body>
 
+  <h2>Add React in One Minute</h2>
+  <p>This page demonstrates using React with no build tooling.</p>
+  <p>React is loaded as a script tag.</p>
 
-    function App() {
-      return (
-        <div>
-          <Welcome name="Алиса" />
-          <Welcome name="Базилио" />
-          <Welcome name="Буратино" />
-        </div>
-      );
-    }
-
-    ReactDOM.render(
-      <ActionLink />,
-      document.querySelector('.app-hello')
-    );</script><script type="text/babel" id="app-tick">class Clock extends React.Component {
-
-      constructor(props) {
-        super(props);
-        this.state = { date: new Date() };
-      }
-
-      componentDidMount() {
-        this.timerID = setInterval(
-          () => this.tick(),
-          1000
-        );
-      }
-
-      componentWillUnmount() {
-        clearInterval(this.timerID);
-      }
-
-      tick() {
-        this.setState({
-          date: new Date()
-        });
-      }
-
-      render() {
-        return (
-          <div>
-            <h1>Привет, мир!</h1>
-            <h2>Сейчас {this.state.date.toLocaleTimeString()}.</h2>
-          </div>
-        );
-      }
-    }
+  <!-- We will put our React component inside this div. -->
+  <div class="app-hello"></div>
+  <div id="like_button_container"></div>
+  <div class="app-tick"></div>
+  <div id="app-fitable"></div>
 
 
-    ReactDOM.render(
-      <Clock />,
-      document.querySelector('.app-tick')
-    );
 
-    // function tick() {
+<script src="main.js"></script></body>
 
-    // }
-
-    // setInterval(tick, 1000);</script><script src="main.js"></script></body></html>
+</html>

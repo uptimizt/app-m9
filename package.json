@@ -20,7 +20,7 @@
   },
   "scripts": {
     "dev": "webpack-dev-server --mode development",
-    "build": "webpack"
+    "build": "webpack --mode development"
   },
   "eslintConfig": {
     "extends": "react-app"
