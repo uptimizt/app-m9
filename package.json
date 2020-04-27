@@ -19,7 +19,7 @@
     "react-scripts": "3.4.1"
   },
   "scripts": {
-    "dev": "webpack-dev-server --mode development",
+    "dev": "webpack-dev-server --inline --mode development",
     "build": "webpack --mode development"
   },
   "eslintConfig": {
