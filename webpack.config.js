@@ -14,7 +14,7 @@ module.exports = {
   entry: './src/app.js',
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, '.'),
+    path: path.resolve(__dirname, 'docs'),
   },
 
 
