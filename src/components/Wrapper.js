@@ -36,7 +36,7 @@ export default function Wrapper() {
                     
 
                     >
-                        <Typography variant="h1" component="h2">
+                        <Typography variant="h3" component="body1">
                             Meditation
                         </Typography>
                     </Box>
