@@ -1,11 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import PostList from './components/PostList.js';
-// import PostList from './components/PostList-v2.js';
+import Wrapper from './components/Wrapper.js';
 import './index.css';
 
 
 ReactDOM.render(
-  <p>sdfsdf</p>,
+  <Wrapper />,
   document.getElementById('app')
 );
