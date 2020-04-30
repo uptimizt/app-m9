@@ -10,3 +10,8 @@
 - починить метод стопа
 - поискать способ быстрого старта звука
 - мб перетащить на гатсби?
+
+# notes 
+
+- 15 React Audio & Video Player Component Libraries
+ https://bashooka.com/coding/react-audio-video-player-component-libraries/
