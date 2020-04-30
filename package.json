@@ -22,7 +22,8 @@
     "react-dom": "^16.13.1",
     "react-hot-loader": "^4.12.20",
     "react-scripts": "3.4.1",
-    "style-loader": "^1.2.0"
+    "style-loader": "^1.2.0",
+    "use-sound": "^1.0.2"
   },
   "scripts": {
     "dev": "webpack-dev-server --inline --mode development",

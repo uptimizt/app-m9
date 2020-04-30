@@ -1,6 +1,50 @@
 /******/ (function(modules) { // webpackBootstrap
+/******/ 	// install a JSONP callback for chunk loading
+/******/ 	function webpackJsonpCallback(data) {
+/******/ 		var chunkIds = data[0];
+/******/ 		var moreModules = data[1];
+/******/
+/******/
+/******/ 		// add "moreModules" to the modules object,
+/******/ 		// then flag all "chunkIds" as loaded and fire callback
+/******/ 		var moduleId, chunkId, i = 0, resolves = [];
+/******/ 		for(;i < chunkIds.length; i++) {
+/******/ 			chunkId = chunkIds[i];
+/******/ 			if(Object.prototype.hasOwnProperty.call(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 				resolves.push(installedChunks[chunkId][0]);
+/******/ 			}
+/******/ 			installedChunks[chunkId] = 0;
+/******/ 		}
+/******/ 		for(moduleId in moreModules) {
+/******/ 			if(Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
+/******/ 				modules[moduleId] = moreModules[moduleId];
+/******/ 			}
+/******/ 		}
+/******/ 		if(parentJsonpFunction) parentJsonpFunction(data);
+/******/
+/******/ 		while(resolves.length) {
+/******/ 			resolves.shift()();
+/******/ 		}
+/******/
+/******/ 	};
+/******/
+/******/
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
+/******/
+/******/ 	// object to store loaded and loading chunks
+/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 	// Promise = chunk loading, 0 = chunk loaded
+/******/ 	var installedChunks = {
+/******/ 		"main": 0
+/******/ 	};
+/******/
+/******/
+/******/
+/******/ 	// script path function
+/******/ 	function jsonpScriptSrc(chunkId) {
+/******/ 		return __webpack_require__.p + "" + chunkId + ".main.js"
+/******/ 	}
 /******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
@@ -26,6 +70,67 @@
 /******/ 		return module.exports;
 /******/ 	}
 /******/
+/******/ 	// This file contains only the entry chunk.
+/******/ 	// The chunk loading function for additional chunks
+/******/ 	__webpack_require__.e = function requireEnsure(chunkId) {
+/******/ 		var promises = [];
+/******/
+/******/
+/******/ 		// JSONP chunk loading for javascript
+/******/
+/******/ 		var installedChunkData = installedChunks[chunkId];
+/******/ 		if(installedChunkData !== 0) { // 0 means "already installed".
+/******/
+/******/ 			// a Promise means "currently loading".
+/******/ 			if(installedChunkData) {
+/******/ 				promises.push(installedChunkData[2]);
+/******/ 			} else {
+/******/ 				// setup Promise in chunk cache
+/******/ 				var promise = new Promise(function(resolve, reject) {
+/******/ 					installedChunkData = installedChunks[chunkId] = [resolve, reject];
+/******/ 				});
+/******/ 				promises.push(installedChunkData[2] = promise);
+/******/
+/******/ 				// start chunk loading
+/******/ 				var script = document.createElement('script');
+/******/ 				var onScriptComplete;
+/******/
+/******/ 				script.charset = 'utf-8';
+/******/ 				script.timeout = 120;
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 				script.src = jsonpScriptSrc(chunkId);
+/******/
+/******/ 				// create error before stack unwound to get useful stacktrace later
+/******/ 				var error = new Error();
+/******/ 				onScriptComplete = function (event) {
+/******/ 					// avoid mem leaks in IE.
+/******/ 					script.onerror = script.onload = null;
+/******/ 					clearTimeout(timeout);
+/******/ 					var chunk = installedChunks[chunkId];
+/******/ 					if(chunk !== 0) {
+/******/ 						if(chunk) {
+/******/ 							var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 							var realSrc = event && event.target && event.target.src;
+/******/ 							error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+/******/ 							error.name = 'ChunkLoadError';
+/******/ 							error.type = errorType;
+/******/ 							error.request = realSrc;
+/******/ 							chunk[1](error);
+/******/ 						}
+/******/ 						installedChunks[chunkId] = undefined;
+/******/ 					}
+/******/ 				};
+/******/ 				var timeout = setTimeout(function(){
+/******/ 					onScriptComplete({ type: 'timeout', target: script });
+/******/ 				}, 120000);
+/******/ 				script.onerror = script.onload = onScriptComplete;
+/******/ 				document.head.appendChild(script);
+/******/ 			}
+/******/ 		}
+/******/ 		return Promise.all(promises);
+/******/ 	};
 /******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
@@ -78,6 +183,16 @@
 /******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// on error function for async loading
+/******/ 	__webpack_require__.oe = function(err) { console.error(err); throw err; };
+/******/
+/******/ 	var jsonpArray = window["webpackJsonp"] = window["webpackJsonp"] || [];
+/******/ 	var oldJsonpFunction = jsonpArray.push.bind(jsonpArray);
+/******/ 	jsonpArray.push = webpackJsonpCallback;
+/******/ 	jsonpArray = jsonpArray.slice();
+/******/ 	for(var i = 0; i < jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);
+/******/ 	var parentJsonpFunction = oldJsonpFunction;
 /******/
 /******/
 /******/ 	// Load entry module and return exports
@@ -5939,6 +6054,18 @@ eval("__webpack_require__.r(__webpack_exports__);\nvar isProduction = \"developm
 
 /***/ }),
 
+/***/ "./node_modules/use-sound/dist/use-sound.esm.js":
+/*!******************************************************!*\
+  !*** ./node_modules/use-sound/dist/use-sound.esm.js ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n\n\nfunction _extends() {\n  _extends = Object.assign || function (target) {\n    for (var i = 1; i < arguments.length; i++) {\n      var source = arguments[i];\n\n      for (var key in source) {\n        if (Object.prototype.hasOwnProperty.call(source, key)) {\n          target[key] = source[key];\n        }\n      }\n    }\n\n    return target;\n  };\n\n  return _extends.apply(this, arguments);\n}\n\nfunction _objectWithoutPropertiesLoose(source, excluded) {\n  if (source == null) return {};\n  var target = {};\n  var sourceKeys = Object.keys(source);\n  var key, i;\n\n  for (i = 0; i < sourceKeys.length; i++) {\n    key = sourceKeys[i];\n    if (excluded.indexOf(key) >= 0) continue;\n    target[key] = source[key];\n  }\n\n  return target;\n}\n\nfunction useOnMount(callback) {\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(callback, []);\n}\n\nfunction useSound(url, _ref) {\n  if (_ref === void 0) {\n    _ref = {};\n  }\n\n  var _ref2 = _ref,\n      _ref2$volume = _ref2.volume,\n      volume = _ref2$volume === void 0 ? 1 : _ref2$volume,\n      _ref2$playbackRate = _ref2.playbackRate,\n      playbackRate = _ref2$playbackRate === void 0 ? 1 : _ref2$playbackRate,\n      _ref2$soundEnabled = _ref2.soundEnabled,\n      soundEnabled = _ref2$soundEnabled === void 0 ? true : _ref2$soundEnabled,\n      _ref2$interrupt = _ref2.interrupt,\n      interrupt = _ref2$interrupt === void 0 ? false : _ref2$interrupt,\n      onload = _ref2.onload,\n      delegated = _objectWithoutPropertiesLoose(_ref2, [\"volume\", \"playbackRate\", \"soundEnabled\", \"interrupt\", \"onload\"]);\n\n  var HowlConstructor = react__WEBPACK_IMPORTED_MODULE_0___default.a.useRef(null);\n\n  var _React$useState = react__WEBPACK_IMPORTED_MODULE_0___default.a.useState(false),\n      isPlaying = _React$useState[0],\n      setIsPlaying = _React$useState[1];\n\n  var _React$useState2 = react__WEBPACK_IMPORTED_MODULE_0___default.a.useState(null),\n      duration = _React$useState2[0],\n      setDuration = _React$useState2[1];\n\n  var _React$useState3 = react__WEBPACK_IMPORTED_MODULE_0___default.a.useState(null),\n      sound = _React$useState3[0],\n      setSound = _React$useState3[1];\n\n  var handleLoad = function handleLoad() {\n    if (typeof onload === 'function') {\n      // @ts-ignore\n      onload.call(this);\n    } // @ts-ignore\n\n\n    setDuration(this.duration() * 1000);\n  }; // We want to lazy-load Howler, since sounds can't play on load anyway.\n\n\n  useOnMount(function () {\n    var isCancelled = false;\n    __webpack_require__.e(/*! import() */ 0).then(__webpack_require__.t.bind(null, /*! howler */ \"./node_modules/howler/dist/howler.js\", 7)).then(function (mod) {\n      if (!isCancelled) {\n        HowlConstructor.current = mod.Howl;\n\n        var _sound = new HowlConstructor.current(_extends({\n          src: [url],\n          volume: volume,\n          rate: playbackRate,\n          onload: handleLoad\n        }, delegated));\n\n        setSound(_sound);\n      }\n    });\n    return function () {\n      isCancelled = true;\n    };\n  }); // When the URL changes, we have to do a whole thing where we recreate\n  // the Howl instance. This is because Howler doesn't expose a way to\n  // tweak the sound\n\n  react__WEBPACK_IMPORTED_MODULE_0___default.a.useEffect(function () {\n    if (HowlConstructor.current && sound) {\n      setSound(new HowlConstructor.current(_extends({\n        src: [url],\n        volume: volume,\n        onload: handleLoad\n      }, delegated)));\n    } // The linter wants to run this effect whenever ANYTHING changes,\n    // but very specifically I only want to recreate the Howl instance\n    // when the `url` changes. Other changes should have no effect.\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n\n  }, [url]); // Whenever volume/playbackRate are changed, change those properties\n  // on the sound instance.\n\n  react__WEBPACK_IMPORTED_MODULE_0___default.a.useEffect(function () {\n    if (sound) {\n      sound.volume(volume);\n      sound.rate(playbackRate);\n    } // A weird bug means that including the `sound` here can trigger an\n    // error on unmount, where the state loses track of the sprites??\n    // No idea, but anyway I don't need to re-run this if only the `sound`\n    // changes.\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n\n  }, [volume, playbackRate]);\n  var play = react__WEBPACK_IMPORTED_MODULE_0___default.a.useCallback(function (options) {\n    if (typeof options === 'undefined') {\n      options = {};\n    }\n\n    if (!sound || !soundEnabled && !options.forceSoundEnabled) {\n      return;\n    }\n\n    if (interrupt) {\n      sound.stop();\n    }\n\n    if (options.playbackRate) {\n      sound.rate(options.playbackRate);\n    }\n\n    sound.play(options.id);\n    sound.once('end', function () {\n      return setIsPlaying(false);\n    });\n    setIsPlaying(true);\n  }, [sound, soundEnabled, interrupt]);\n  var stop = react__WEBPACK_IMPORTED_MODULE_0___default.a.useCallback(function (id) {\n    if (!sound) {\n      return;\n    }\n\n    sound.stop(id);\n    setIsPlaying(false);\n  }, [sound]);\n  var pause = react__WEBPACK_IMPORTED_MODULE_0___default.a.useCallback(function (id) {\n    if (!sound) {\n      return;\n    }\n\n    sound.pause(id);\n    setIsPlaying(false);\n  }, [sound]);\n  var returnedValue = [play, {\n    sound: sound,\n    stop: stop,\n    pause: pause,\n    isPlaying: isPlaying,\n    duration: duration\n  }];\n  return returnedValue;\n}\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (useSound);\n//# sourceMappingURL=use-sound.esm.js.map\n\n\n//# sourceURL=webpack:///./node_modules/use-sound/dist/use-sound.esm.js?");
+
+/***/ }),
+
 /***/ "./node_modules/webpack/buildin/global.js":
 /*!***********************************!*\
   !*** (webpack)/buildin/global.js ***!
@@ -5958,7 +6085,7 @@ eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn th
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return BottomNavigationBar; });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @material-ui/core */ \"./node_modules/@material-ui/core/esm/index.js\");\n/* harmony import */ var _material_ui_icons_Stop__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @material-ui/icons/Stop */ \"./node_modules/@material-ui/icons/Stop.js\");\n/* harmony import */ var _material_ui_icons_Stop__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_material_ui_icons_Stop__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _material_ui_icons_GitHub__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @material-ui/icons/GitHub */ \"./node_modules/@material-ui/icons/GitHub.js\");\n/* harmony import */ var _material_ui_icons_GitHub__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_material_ui_icons_GitHub__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _material_ui_icons_PlayCircleOutline__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @material-ui/icons/PlayCircleOutline */ \"./node_modules/@material-ui/icons/PlayCircleOutline.js\");\n/* harmony import */ var _material_ui_icons_PlayCircleOutline__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_material_ui_icons_PlayCircleOutline__WEBPACK_IMPORTED_MODULE_4__);\n\n\n\n\n\nfunction BottomNavigationBar() {\n  var useStyles = Object(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"makeStyles\"])(function (theme) {\n    return {\n      text: {\n        padding: theme.spacing(2, 2, 0)\n      },\n      paper: {\n        paddingBottom: 50\n      },\n      list: {\n        marginBottom: theme.spacing(2)\n      },\n      subheader: {\n        backgroundColor: theme.palette.background.paper\n      },\n      appBar: {\n        top: 'auto',\n        bottom: 0\n      },\n      grow: {\n        flexGrow: 1\n      },\n      fabButton: {\n        position: 'absolute',\n        zIndex: 1,\n        top: -30,\n        left: 0,\n        right: 0,\n        margin: '0 auto'\n      }\n    };\n  });\n  var classes = useStyles();\n\n  function openGitHub() {\n    var url = 'https://github.com/uptimizt/app-m9';\n    window.open(url, '_blank');\n  }\n\n  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"AppBar\"], {\n    position: \"fixed\",\n    color: \"primary\",\n    className: classes.appBar\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"BottomNavigation\"], {\n    showLabels: true\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"BottomNavigationAction\"], {\n    label: \"Play\",\n    icon: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_icons_PlayCircleOutline__WEBPACK_IMPORTED_MODULE_4___default.a, null)\n  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"BottomNavigationAction\"], {\n    label: \"Stop\",\n    icon: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_icons_Stop__WEBPACK_IMPORTED_MODULE_2___default.a, null)\n  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"BottomNavigationAction\"], {\n    label: \"GitHub\",\n    icon: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_icons_GitHub__WEBPACK_IMPORTED_MODULE_3___default.a, null),\n    href: \"https://github.com/uptimizt/app-m9\",\n    target: \"_blank\" // onClick={() => { this.openGitHub }}\n\n  })));\n}\n\n//# sourceURL=webpack:///./src/components/BottomNavigationBar.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return BottomNavigationBar; });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @material-ui/core */ \"./node_modules/@material-ui/core/esm/index.js\");\n/* harmony import */ var _material_ui_icons_Stop__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @material-ui/icons/Stop */ \"./node_modules/@material-ui/icons/Stop.js\");\n/* harmony import */ var _material_ui_icons_Stop__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_material_ui_icons_Stop__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _material_ui_icons_GitHub__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @material-ui/icons/GitHub */ \"./node_modules/@material-ui/icons/GitHub.js\");\n/* harmony import */ var _material_ui_icons_GitHub__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_material_ui_icons_GitHub__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _material_ui_icons_PlayCircleOutline__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @material-ui/icons/PlayCircleOutline */ \"./node_modules/@material-ui/icons/PlayCircleOutline.js\");\n/* harmony import */ var _material_ui_icons_PlayCircleOutline__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_material_ui_icons_PlayCircleOutline__WEBPACK_IMPORTED_MODULE_4__);\n/* harmony import */ var use_sound__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! use-sound */ \"./node_modules/use-sound/dist/use-sound.esm.js\");\n/* harmony import */ var _white_noise_10min_mp3__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./white-noise-10min.mp3 */ \"./src/components/white-noise-10min.mp3\");\nfunction _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }\n\nfunction _nonIterableRest() { throw new TypeError(\"Invalid attempt to destructure non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.\"); }\n\nfunction _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === \"string\") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === \"Object\" && o.constructor) n = o.constructor.name; if (n === \"Map\" || n === \"Set\") return Array.from(n); if (n === \"Arguments\" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }\n\nfunction _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }\n\nfunction _iterableToArrayLimit(arr, i) { if (typeof Symbol === \"undefined\" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i[\"return\"] != null) _i[\"return\"](); } finally { if (_d) throw _e; } } return _arr; }\n\nfunction _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }\n\n\n\n\n\n\n\n\nfunction BottomNavigationBar() {\n  var useStyles = Object(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"makeStyles\"])(function (theme) {\n    return {\n      text: {\n        padding: theme.spacing(2, 2, 0)\n      },\n      paper: {\n        paddingBottom: 50\n      },\n      list: {\n        marginBottom: theme.spacing(2)\n      },\n      subheader: {\n        backgroundColor: theme.palette.background.paper\n      },\n      appBar: {\n        top: 'auto',\n        bottom: 0\n      },\n      grow: {\n        flexGrow: 1\n      },\n      fabButton: {\n        position: 'absolute',\n        zIndex: 1,\n        top: -30,\n        left: 0,\n        right: 0,\n        margin: '0 auto'\n      }\n    };\n  });\n  var classes = useStyles();\n\n  var _useSound = Object(use_sound__WEBPACK_IMPORTED_MODULE_5__[\"default\"])(_white_noise_10min_mp3__WEBPACK_IMPORTED_MODULE_6__[\"default\"]),\n      _useSound2 = _slicedToArray(_useSound, 2),\n      play = _useSound2[0],\n      stop = _useSound2[1].stop;\n\n  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"AppBar\"], {\n    position: \"fixed\",\n    color: \"primary\",\n    className: classes.appBar\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"BottomNavigation\"], {\n    showLabels: true\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"BottomNavigationAction\"], {\n    label: \"Play\",\n    icon: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_icons_PlayCircleOutline__WEBPACK_IMPORTED_MODULE_4___default.a, null),\n    onClick: play\n  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"BottomNavigationAction\"], {\n    label: \"Stop\",\n    icon: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_icons_Stop__WEBPACK_IMPORTED_MODULE_2___default.a, null),\n    onClick: stop\n  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__[\"BottomNavigationAction\"], {\n    label: \"GitHub\",\n    icon: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_icons_GitHub__WEBPACK_IMPORTED_MODULE_3___default.a, null),\n    href: \"https://github.com/uptimizt/app-m9\",\n    target: \"_blank\"\n  })));\n}\n\n//# sourceURL=webpack:///./src/components/BottomNavigationBar.js?");
 
 /***/ }),
 
@@ -5971,6 +6098,18 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 
 "use strict";
 eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Wrapper; });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _BottomNavigationBar_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./BottomNavigationBar.js */ \"./src/components/BottomNavigationBar.js\");\n/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @material-ui/core */ \"./node_modules/@material-ui/core/esm/index.js\");\n\n\n\nfunction Wrapper() {\n  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__[\"CssBaseline\"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__[\"Box\"], {\n    m: 3,\n    mb: 11,\n    display: \"flex\",\n    justifyContent: \"center\",\n    alignItems: \"center\" // height=\"80vh\"\n    ,\n    style: {\n      height: \"calc(100vh - 115px)\"\n    }\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__[\"Box\"], {\n    boxShadow: 3,\n    bgcolor: \"background.paper\",\n    p: 3\n  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__[\"Typography\"], {\n    variant: \"h1\",\n    component: \"h2\"\n  }, \"Meditation\"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_BottomNavigationBar_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"], null));\n}\n\n//# sourceURL=webpack:///./src/components/Wrapper.js?");
+
+/***/ }),
+
+/***/ "./src/components/white-noise-10min.mp3":
+/*!**********************************************!*\
+  !*** ./src/components/white-noise-10min.mp3 ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony default export */ __webpack_exports__[\"default\"] = (__webpack_require__.p + \"79078698328fbc5484cab1b6a054c349.mp3\");\n\n//# sourceURL=webpack:///./src/components/white-noise-10min.mp3?");
 
 /***/ }),
 

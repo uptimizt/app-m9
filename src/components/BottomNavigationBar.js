@@ -13,6 +13,10 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 
 
+import useSound from 'use-sound';
+ 
+import boopSfx from './white-noise-10min.mp3'; 
+
 
 
 export default function BottomNavigationBar() {
@@ -48,10 +52,7 @@ export default function BottomNavigationBar() {
 
     const classes = useStyles();
 
-    function openGitHub() {
-        const url = 'https://github.com/uptimizt/app-m9';
-        window.open(url, '_blank');
-    }
+    const [play, { stop }] = useSound(boopSfx);
 
     return (
 
@@ -62,11 +63,14 @@ export default function BottomNavigationBar() {
                 <BottomNavigationAction
                     label="Play"
                     icon={<PlayCircleOutlineIcon />}
+                    onClick={play}
+
                 />
 
                 <BottomNavigationAction
                     label="Stop"
                     icon={<StopIcon />}
+                    onClick={stop}
                 />
 
                 <BottomNavigationAction
@@ -74,7 +78,6 @@ export default function BottomNavigationBar() {
                     icon={<GitHubIcon />}
                     href="https://github.com/uptimizt/app-m9"
                     target="_blank"
-                    // onClick={() => { this.openGitHub }}
                 />
 
             </BottomNavigation>
